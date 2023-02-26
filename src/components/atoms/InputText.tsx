@@ -1,32 +1,30 @@
 import React from "react";
+import { Field } from "formik";
+import { PropsWithChildren } from "react";
+
 interface InputText {
   name: string;
-  value: string | undefined;
-  onChange: Function;
   placeholder: string;
+  error: boolean;
+  password?: boolean;
 }
 
-function InputText(props: InputText) {
-  const { name, value, onChange, placeholder } = props;
-
+function InputText(props: PropsWithChildren & InputText) {
+  const { name, children, placeholder, error, password } = props;
   return (
-    <input
-      className="w-full border border-gray-200 p-2 my-2 rounded-sm focus:outline-gray-300"
-      name={name}
-      type={
-        name === "email"
-          ? "email"
-          : name === "password" || name === "re-password"
-          ? "password"
-          : "text"
-      }
-      value={value}
-      onChange={(e) => {
-        onChange(e);
-      }}
-      placeholder={placeholder}
-      required
-    />
+    <div className="flex relative w-fit h-fit items-center text-md">
+      <div className="left-2 absolute w-fit h-fit text-gray-400">
+        {children}
+      </div>
+      <Field
+        className={`w-full border border-gray-200 p-2 my-2 rounded-sm ${
+          error ? "border-red" : null
+        } focus:outline-gray-300 pl-8`}
+        name={name}
+        placeholder={placeholder}
+        type={password ? "password" : "text"}
+      />
+    </div>
   );
 }
 

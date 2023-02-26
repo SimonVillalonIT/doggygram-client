@@ -1,76 +1,86 @@
 "use client";
 import React from "react";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import { useTokenStore } from "@/store/tokenStore";
-import { useUserData } from "@/hooks/useUserData";
+import { AiOutlineUser, AiOutlineMail } from "react-icons/ai";
+import { RiLockPasswordLine } from "react-icons/ri";
 import InputText from "../atoms/InputText";
 import ButtonSubmit from "../atoms/ButtonSubmit";
-import Link from "next/link";
-import NoSSRWrapper from "./NoSSRWrapper";
+import useFormik from "@/hooks/useFormik";
+import { Formik, Form, ErrorMessage } from "formik";
 
-function RegisterForm() {
-  const { error, register, googleLogIn } = useTokenStore((state) => ({
-    register: state.register,
-    googleLogIn: state.googleLogIn,
-    error: state.error,
-  }));
-
-  const { userData, handleOnChange } = useUserData();
+function RegisterForm(props: any) {
+  const { registerValidateFields, handleRegisterSubmit } = useFormik();
 
   return (
-    <NoSSRWrapper>
-      <GoogleOAuthProvider
-        clientId={`${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}`}
-      >
-        <form
-          onClick={() => {
-            register(userData);
-          }}
-        >
-          <p className="text-red">{error !== "" ? error : null}</p>
-          <div className="flex flex-col items-center">
-            <GoogleLogin
-              onSuccess={(response) => googleLogIn(response)}
-              onError={() => console.log("error")}
-            />
-            <div className="container">
-              <hr className="hr-text" data-content="OR" />
-            </div>
-            <InputText
-              name="user"
-              value={userData.user}
-              placeholder="Username"
-              onChange={handleOnChange}
-            />
-            <InputText
-              name="email"
-              value={userData.email}
-              placeholder="Email"
-              onChange={handleOnChange}
-            />
-            <InputText
-              name="password"
-              value={userData.password}
-              placeholder="Password"
-              onChange={handleOnChange}
-            />
-            <InputText
-              name="re-password"
-              value={userData.password}
-              placeholder="Re-enter password"
-              onChange={handleOnChange}
-            />
-            <ButtonSubmit color="bg-light-blue" text="Log in" />
-            <p className="mt-10 text-gray-400">
-              {"Already have an account? "}
-              <Link href="/" className="text-light-blue">
-                Log In
-              </Link>
-            </p>
-          </div>
-        </form>
-      </GoogleOAuthProvider>
-    </NoSSRWrapper>
+    <Formik
+      initialValues={{
+        user: "",
+        email: "",
+        password: "",
+        "re-password": "",
+      }}
+      validate={registerValidateFields}
+      onSubmit={async (values, setFieldError) => {
+        await handleRegisterSubmit(values, setFieldError);
+        props.set(true);
+      }}
+    >
+      {({ errors, values }) => (
+        <Form className="flex flex-col items-center">
+          <ErrorMessage className="text-red" name="user" component="small" />
+          <InputText
+            error={errors.user ? true : false}
+            name="user"
+            placeholder="Username"
+          >
+            <AiOutlineUser />
+          </InputText>
+          <ErrorMessage className="text-red" name="email" component="small" />
+          <InputText
+            error={errors.email ? true : false}
+            name="email"
+            placeholder="Email"
+          >
+            <AiOutlineMail />
+          </InputText>
+          <ErrorMessage
+            className="text-red w-64 text-center"
+            name="password"
+            component="small"
+          />
+
+          <InputText
+            error={errors.password ? true : false}
+            name="password"
+            placeholder="Password"
+            password={true}
+          >
+            <RiLockPasswordLine />
+          </InputText>
+          <ErrorMessage
+            className="text-red"
+            name="re-password"
+            component="small"
+          />
+          <InputText
+            error={errors.password ? true : false}
+            name="re-password"
+            placeholder="Re-enter Password"
+            password={true}
+          >
+            <RiLockPasswordLine />
+          </InputText>
+          <ButtonSubmit
+            disabled={
+              errors.user !== "" && errors.email !== "" && errors.password
+                ? true
+                : false
+            }
+            color="bg-light-blue"
+            text="Register"
+          />
+        </Form>
+      )}
+    </Formik>
   );
 }
 

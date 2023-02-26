@@ -1,22 +1,30 @@
 "use client";
-import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React from "react";
 import { useTokenStore } from "@/store/tokenStore";
+import PrivateRoute from "@/utils/PrivateRoute";
 
 function Home() {
-  const { isLoggedIn } = useTokenStore((state) => ({
+  const { logOut } = useTokenStore((state) => ({
     isLoggedIn: state.isLoggedIn,
+    logOut: state.logOut,
   }));
-
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      return router.push("/");
-    }
-  }, [isLoggedIn]);
-
-  return <div>Hello world</div>;
+  return (
+    <PrivateRoute>
+      <div>
+        <header className="w-screen bg-black">
+          <p
+            onClick={() => {
+              logOut();
+            }}
+            className="text-white"
+          >
+            Log Out
+          </p>
+        </header>
+        <div>Hello world</div>
+      </div>
+    </PrivateRoute>
+  );
 }
 
 export default Home;

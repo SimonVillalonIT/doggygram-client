@@ -1,7 +1,18 @@
 import { create } from "zustand";
-import { googleAuth, logIn, refreshToken, register } from "../utils/auth";
+import {
+  googleAuth,
+  logIn,
+  logOut,
+  refreshToken,
+  register,
+} from "../utils/auth";
 import { persist } from "zustand/middleware";
-import { userData } from "@/hooks/useUserData";
+
+interface userData {
+  user: string;
+  email?: string;
+  password: string;
+}
 
 export type Store = {
   token: string;
@@ -11,12 +22,13 @@ export type Store = {
 };
 
 export type Actions = {
-  register: (user: userData) => void;
-  logIn: (user: userData) => void;
-  googleLogIn: (response: any) => void;
-  refreshToken: () => void;
+  register: (user: userData) => Promise<void>;
+  logIn: (user: userData) => Promise<void>;
+  googleLogIn: (response: any) => Promise<void>;
+  refreshToken: () => Promise<void>;
   setTime: () => void;
   setLoggedIn: (bool: boolean) => void;
+  logOut: () => void;
 };
 
 export const useTokenStore = create(
@@ -30,36 +42,27 @@ export const useTokenStore = create(
         set((state) => ({ ...state, isLoggedIn: bool }));
       },
       register: async (userData) => {
-        console.log(userData);
-        try {
-          const result = await register(userData);
-          set((state) => ({
-            ...state,
-            token: result.token,
-            error: "",
-            expiresIn: result.expiresIn,
-          }));
-          get().setTime();
-        } catch (error: any) {
-          console.log(error);
-          set((state) => ({ ...state, error: error.response.data.error }));
-        }
+        const result = await register(userData);
+        console.log(result);
+        set((state) => ({
+          ...state,
+          token: result.token,
+          error: "",
+          expiresIn: result.expiresIn,
+        }));
+        get().setTime();
       },
       logIn: async (userData) => {
-        try {
-          const result = await logIn(userData);
-          set((state) => ({
-            ...state,
-            token: result.token,
-            error: "",
-            expiresIn: result.expiresIn,
-          }));
-          get().setLoggedIn(true);
-          get().setTime();
-        } catch (error: any) {
-          console.log(error);
-          set((state) => ({ ...state, error: error.response.data.error }));
-        }
+        const result = await logIn(userData);
+        console.log(result);
+        set((state) => ({
+          ...state,
+          token: result.token,
+          error: "",
+          expiresIn: result.expiresIn,
+        }));
+        get().setLoggedIn(true);
+        get().setTime();
       },
       googleLogIn: async (response) => {
         try {
@@ -74,7 +77,6 @@ export const useTokenStore = create(
           get().setTime();
         } catch (error: any) {
           console.log(error);
-          set((state) => ({ ...state, error: error.response.data.error }));
         }
       },
       refreshToken: async () => {
@@ -98,6 +100,16 @@ export const useTokenStore = create(
           refresh();
           console.log("refreshing token...");
         }, expiresIn - 6000);
+      },
+      logOut: async () => {
+        await logOut();
+        set((state) => ({
+          ...state,
+          token: "",
+          expiresIn: 0,
+          error: "",
+          isLoggedIn: false,
+        }));
       },
     }),
     {

@@ -1,63 +1,54 @@
 import React from "react";
-import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import ButtonSubmit from "@/components/atoms/ButtonSubmit";
+import { AiOutlineUser } from "react-icons/ai";
+import { RiLockPasswordLine } from "react-icons/ri";
 import InputText from "@/components/atoms/InputText";
-import Link from "next/link";
-import { useUserData } from "@/hooks/useUserData";
-import { useTokenStore } from "@/store/tokenStore";
+import { Formik, Form, ErrorMessage } from "formik";
+import useFormik from "@/hooks/useFormik";
 
 function LoginForm() {
-  const { userData, handleOnChange } = useUserData();
-
-  const { error, logIn, googleLogIn } = useTokenStore((state) => ({
-    token: state.token,
-    error: state.error,
-    logIn: state.logIn,
-    googleLogIn: state.googleLogIn,
-  }));
+  const { loginValidateFields, handleLoginSubmit } = useFormik();
 
   return (
-    <GoogleOAuthProvider
-      clientId={`${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}`}
+    <Formik
+      initialValues={{
+        user: "",
+        password: "",
+      }}
+      validate={loginValidateFields}
+      onSubmit={handleLoginSubmit}
     >
-      <form
-        onClick={() => {
-          logIn(userData);
-        }}
-      >
-        <p className="text-red">{error !== "" ? error : null}</p>
-        <div className="flex flex-col items-center">
-          <GoogleLogin
-            onSuccess={(response) => {
-              googleLogIn(response);
-            }}
-            onError={() => console.log("error")}
-          />
-          <div className="container">
-            <hr className="hr-text" data-content="OR" />
-          </div>
+      {({ errors }) => (
+        <Form className="flex flex-col items-center w-full">
+          <ErrorMessage className="text-red" name="user" component="small" />
           <InputText
+            error={errors.user ? true : false}
             name="user"
-            value={userData.user}
             placeholder="Username or email"
-            onChange={handleOnChange}
+          >
+            <AiOutlineUser className="relative" />
+          </InputText>
+          <ErrorMessage
+            className="text-red"
+            name="password"
+            component="small"
           />
           <InputText
+            error={errors.password ? true : false}
             name="password"
-            value={userData.password}
             placeholder="Password"
-            onChange={handleOnChange}
+            password={true}
+          >
+            <RiLockPasswordLine />
+          </InputText>
+          <ButtonSubmit
+            disabled={errors.user !== "" && errors.password ? true : false}
+            color="bg-light-blue"
+            text="Log in"
           />
-          <ButtonSubmit color="bg-light-blue" text="Log in" />
-          <p className="mt-10 text-gray-400">
-            {"Don't have an account? "}
-            <Link href="/signUp" className="text-light-blue">
-              Sign up
-            </Link>
-          </p>
-        </div>
-      </form>
-    </GoogleOAuthProvider>
+        </Form>
+      )}
+    </Formik>
   );
 }
 

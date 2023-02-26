@@ -1,11 +1,15 @@
 import jwt_decode from "jwt-decode";
 import axios from "axios";
-import { userData } from "@/hooks/useUserData";
-
 const api = axios.create({
   baseURL: "http://localhost:8080/api/",
   withCredentials: true,
 });
+
+interface userData {
+  user: string;
+  email?: string;
+  password: string;
+}
 
 export const createOrGetUser = async (response: any) => {
   try {
@@ -44,7 +48,6 @@ export const googleAuth = async (response: any) => {
 };
 
 export const register = async (userData: userData) => {
-  console.log(userData);
   const res = await api.post("user/register", userData);
   return res.data;
 };
@@ -52,4 +55,11 @@ export const register = async (userData: userData) => {
 export const logIn = async (userData: userData) => {
   const res = await api.post("user/login", userData);
   return res.data;
+};
+
+export const logOut = async () => {
+  localStorage.clear();
+  sessionStorage.clear();
+  document.cookie;
+  return await api.get("user/logout");
 };
