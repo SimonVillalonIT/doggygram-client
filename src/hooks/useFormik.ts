@@ -71,8 +71,7 @@ const useFormik = () => {
       const result = await register(values);
       return result;
     } catch (error: any) {
-      console.log(error);
-      if (error.response.data.error.includes("Duplicate entry")) {
+      if (error.response.data.error.message.includes("Duplicate entry")) {
         return setFieldError("user", "User already exists");
       }
       return setFieldError("user", "Server error");
@@ -87,7 +86,6 @@ const useFormik = () => {
       const result = await logIn(values);
       return result;
     } catch (error: any) {
-      console.log(error);
       return setFieldError("user", "Username or password incorrect");
     }
   };

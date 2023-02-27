@@ -43,7 +43,6 @@ export const useTokenStore = create(
       },
       register: async (userData) => {
         const result = await register(userData);
-        console.log(result);
         set((state) => ({
           ...state,
           token: result.token,
@@ -51,6 +50,7 @@ export const useTokenStore = create(
           expiresIn: result.expiresIn,
         }));
         get().setTime();
+        return result;
       },
       logIn: async (userData) => {
         const result = await logIn(userData);

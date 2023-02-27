@@ -20,11 +20,11 @@ function RegisterForm(props: any) {
       }}
       validate={registerValidateFields}
       onSubmit={async (values, setFieldError) => {
-        await handleRegisterSubmit(values, setFieldError);
-        props.set(true);
+        const result = await handleRegisterSubmit(values, setFieldError);
+        result.token ? props.set(true) : null;
       }}
     >
-      {({ errors, values }) => (
+      {({ errors }) => (
         <Form className="flex flex-col items-center">
           <ErrorMessage className="text-red" name="user" component="small" />
           <InputText
