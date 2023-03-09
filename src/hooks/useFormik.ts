@@ -49,12 +49,12 @@ const useFormik = () => {
     const errors: { user?: string; password?: string } = {};
 
     if (!values.user) {
-      errors.user = "required username";
+      errors.user = "Required username";
     } else if (["admin", "null", "god"].includes(values.user)) {
       errors.user = "Nice try";
     }
     if (!values.password) {
-      errors.user = "required password";
+      errors.user = "Required password";
     }
     return errors;
   };

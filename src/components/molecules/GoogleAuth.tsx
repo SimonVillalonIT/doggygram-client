@@ -9,7 +9,7 @@ function GoogleAuth() {
   }));
 
   return (
-    <div className="p-8 w-full">
+    <div className="px-8 pt-8 w-full">
       <GoogleOAuthProvider
         clientId={`${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}`}
       >
