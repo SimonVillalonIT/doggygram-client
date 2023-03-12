@@ -25,10 +25,13 @@
     "react-avatar-edit": "^1.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.7.1",
+    "react-insta-stories": "^2.4.2",
     "sass": "^1.58.1",
+    "tailwind-scrollbar-hide": "^1.1.7",
     "zustand": "^4.3.3"
   },
   "devDependencies": {
+    "@types/react-slick": "^0.23.10",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "autoprefixer": "^10.4.13",
     "eslint": "8.33.0",
